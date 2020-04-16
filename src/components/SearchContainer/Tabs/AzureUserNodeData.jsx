@@ -12,7 +12,7 @@ import Notes from './Components/Notes';
 import { withAlert } from 'react-alert';
 import NodeGallery from './Components/NodeGallery';
 
-const UserNodeData = () => {
+const AzureUserNodeData = () => {
     const [visible, setVisible] = useState(false);
     const [objectId, setObjectId] = useState(null);
     const [label, setLabel] = useState(null);
@@ -28,7 +28,7 @@ const UserNodeData = () => {
     }, []);
 
     const nodeClickEvent = (type, id, blocksinheritance, domain) => {
-        if (type === 'User') {
+        if (type === 'AzureUser') {
             setVisible(true);
             setObjectId(id);
             setDomain(domain);
@@ -40,7 +40,7 @@ const UserNodeData = () => {
                 .then(r => {
                     let props = r.records[0].get('node').properties;
                     setNodeProps(props);
-                    setLabel(props.name || objectid);
+                    setLabel(props.displayname || objectid);
                     session.close();
                 });
         } else {
@@ -101,7 +101,7 @@ const UserNodeData = () => {
                     property='Reachable High Value Targets'
                     target={objectId}
                     baseQuery={
-                        'MATCH (m:User {objectid: $objectid}),(n {highvalue:true}),p=shortestPath((m)-[r*1..]->(n)) WHERE NONE (r IN relationships(p) WHERE type(r)= "GetChanges") AND NONE (r in relationships(p) WHERE type(r)="GetChangesAll") AND NOT m=n'
+                        'MATCH (m:AzureUser {objectid: $objectid}),(n {highvalue:true}),p=shortestPath((m)-[r*1..]->(n)) WHERE NONE (r IN relationships(p) WHERE type(r)= "GetChanges") AND NONE (r in relationships(p) WHERE type(r)="GetChangesAll") AND NOT m=n'
                     }
                     start={label}
                 />
@@ -138,7 +138,7 @@ const UserNodeData = () => {
                         property='First Degree Group Memberships'
                         target={objectId}
                         baseQuery={
-                            'MATCH (m:User {objectid: $objectid}), (n:Group), p=(m)-[:MemberOf]->(n)'
+                            'MATCH (m:AzureUser {objectid: $objectid}), (n:AzureGroup), p=(m)-[:MemberOf]->(n)'
                         }
                         start={label}
                     />
@@ -147,21 +147,24 @@ const UserNodeData = () => {
                         property='Unrolled Group Membership'
                         target={objectId}
                         baseQuery={
-                            'MATCH p = (m:User {objectid: $objectid})-[r:MemberOf*1..]->(n:Group)'
+                            'MATCH p = (m:AzureUser {objectid: $objectid})-[r:MemberOf*1..]->(n:AzureGroup)'
                         }
                         start={label}
                         distinct
                     />
 
+                </CollapsibleSection>
+
+                <CollapsibleSection header={'Role Membership'}>
                     <NodeCypherLink
-                        property='Foreign Group Membership'
+                        property='First Degree Role Memberships'
                         target={objectId}
                         baseQuery={
-                            'MATCH (m:User {objectid: $objectid}) MATCH (n:Group) WHERE NOT m.domain=n.domain MATCH p=(m)-[r:MemberOf*1..]->(n)'
+                            'MATCH (m:AzureUser {objectid: $objectid}), (n:AzureRole), p=(m)-[:MemberOf]->(n)'
                         }
                         start={label}
-                        domain={domain}
                     />
+
                 </CollapsibleSection>
 
                 <CollapsibleSection header={'Local Admin Rights'}>
@@ -169,7 +172,7 @@ const UserNodeData = () => {
                         property='First Degree Local Admin'
                         target={objectId}
                         baseQuery={
-                            'MATCH p=(m:User {objectid: $objectid})-[r:AdminTo]->(n:Computer)'
+                            'MATCH p=(m:AzureUser {objectid: $objectid})-[r:AdminTo]->(n:Computer)'
                         }
                         start={label}
                         distinct
@@ -179,7 +182,7 @@ const UserNodeData = () => {
                         property='Group Delegated Local Admin Rights'
                         target={objectId}
                         baseQuery={
-                            'MATCH p=(m:User {objectid: $objectid})-[r1:MemberOf*1..]->(g:Group)-[r2:AdminTo]->(n:Computer)'
+                            'MATCH p=(m:AzureUser {objectid: $objectid})-[r1:MemberOf*1..]->(g:Group)-[r2:AdminTo]->(n:Computer)'
                         }
                         start={label}
                         distinct
@@ -189,69 +192,7 @@ const UserNodeData = () => {
                         property='Derivative Local Admin Rights'
                         target={objectId}
                         baseQuery={
-                            'MATCH p=shortestPath((m:User {objectid: $objectid})-[r:HasSession|AdminTo|MemberOf*1..]->(n:Computer))'
-                        }
-                        start={label}
-                        distinct
-                    />
-                </CollapsibleSection>
-
-                <CollapsibleSection header={'Execution Privileges'}>
-                    <NodeCypherLink
-                        property='First Degree RDP Privileges'
-                        target={objectId}
-                        baseQuery={
-                            'MATCH p=(m:User {objectid: $objectid})-[r:CanRDP]->(n:Computer)'
-                        }
-                        start={label}
-                        distinct
-                    />
-
-                    <NodeCypherLink
-                        property='Group Delegated RDP Privileges'
-                        target={objectId}
-                        baseQuery={
-                            'MATCH p=(m:User {objectid: $objectid})-[r1:MemberOf*1..]->(g:Group)-[r2:CanRDP]->(n:Computer)'
-                        }
-                        start={label}
-                        distinct
-                    />
-
-                    <NodeCypherLink
-                        property='First Degree DCOM Privileges'
-                        target={objectId}
-                        baseQuery={
-                            'MATCH p=(m:User {objectid: $objectid})-[r:ExecuteDCOM]->(n:Computer)'
-                        }
-                        start={label}
-                        distinct
-                    />
-
-                    <NodeCypherLink
-                        property='Group Delegated DCOM Privileges'
-                        target={objectId}
-                        baseQuery={
-                            'MATCH p=(m:User {objectid: $objectid})-[r1:MemberOf*1..]->(g:Group)-[r2:ExecuteDCOM]->(n:Computer)'
-                        }
-                        start={label}
-                        distinct
-                    />
-
-                    <NodeCypherLink
-                        property='SQL Admin Rights'
-                        target={objectId}
-                        baseQuery={
-                            'MATCH p=(m:User {objectid: $objectid})-[r:SQLAdmin]->(n:Computer)'
-                        }
-                        start={label}
-                        distinct
-                    />
-
-                    <NodeCypherLink
-                        property='Constrained Delegation Privileges'
-                        target={objectId}
-                        baseQuery={
-                            'MATCH p=(m:User {objectid: $objectid})-[r:AllowedToDelegate]->(n:Computer)'
+                            'MATCH p=shortestPath((m:AzureUser {objectid: $objectid})-[r:HasSession|AdminTo|MemberOf*1..]->(n:Computer))'
                         }
                         start={label}
                         distinct
@@ -263,7 +204,17 @@ const UserNodeData = () => {
                         property='First Degree Object Control'
                         target={objectId}
                         baseQuery={
-                            'MATCH p=(u:User {objectid: $objectid})-[r1]->(n) WHERE r1.isacl=true'
+                            'MATCH p=(u:AzureUser {objectid: $objectid})-[r1]->(n) WHERE r1.isacl=true'
+                        }
+                        end={label}
+                        distinct
+                    />
+
+                    <NodeCypherLink
+                        property='Owned Service Principals'
+                        target={objectId}
+                        baseQuery={
+                            'MATCH p=(u:AzureUser {objectid: $objectid})-[r1:Owns*1..]->(n:ServicePrincipal)'
                         }
                         end={label}
                         distinct
@@ -273,7 +224,7 @@ const UserNodeData = () => {
                         property='Group Delegated Object Control'
                         target={objectId}
                         baseQuery={
-                            'MATCH p=(u:User {objectid: $objectid})-[r1:MemberOf*1..]->(g:Group)-[r2]->(n) WHERE r2.isacl=true'
+                            'MATCH p=(u:AzureUser {objectid: $objectid})-[r1:MemberOf*1..]->(g:AzureGroup)-[r2]->(n) WHERE r2.isacl=true'
                         }
                         start={label}
                         distinct
@@ -283,7 +234,7 @@ const UserNodeData = () => {
                         property='Transitive Object Control'
                         target={objectId}
                         baseQuery={
-                            'MATCH (n) WHERE NOT n.objectid=$objectid MATCH p=shortestPath((u:User {objectid: $objectid})-[r1:MemberOf|AddMember|AllExtendedRights|ForceChangePassword|GenericAll|GenericWrite|WriteDacl|WriteOwner|Owns*1..]->(n))'
+                            'MATCH (n) WHERE NOT n.objectid=$objectid MATCH p=shortestPath((u:AzureUser {objectid: $objectid})-[r1:MemberOf|AddMember|AllExtendedRights|ForceChangePassword|GenericAll|GenericWrite|WriteDacl|WriteOwner|Owns*1..]->(n))'
                         }
                         start={label}
                         distinct
@@ -321,10 +272,10 @@ const UserNodeData = () => {
                         distinct
                     />
                 </CollapsibleSection>
-                <Notes objectid={objectId} type={nodeType} />
+                <Notes objectid={objectId} type={'AzureUser'} />
                 <NodeGallery
                     objectid={objectId}
-                    type={nodeType}
+                    type={'AzureUser'}
                     visible={visible}
                 />
             </dl>
@@ -332,5 +283,5 @@ const UserNodeData = () => {
     );
 };
 
-UserNodeData.propTypes = {};
-export default withAlert()(UserNodeData);
+AzureUserNodeData.propTypes = {};
+export default withAlert()(AzureUserNodeData);

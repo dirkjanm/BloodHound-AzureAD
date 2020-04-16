@@ -155,6 +155,30 @@ global.appStore = {
                 scale: 1.25,
                 color: '#E6E600',
             },
+            AzureUser: {
+                font: "'Font Awesome 5 Free'",
+                content: '\uf007',
+                scale: 1.5,
+                color: '#17E625',
+            },
+            AzureGroup: {
+                font: "'Font Awesome 5 Free'",
+                content: '\uF0C0',
+                scale: 1.5,
+                color: '#DBE617',
+            },
+            AzureRole: {
+                font: "'Font Awesome 5 Free'",
+                content: '\uF507',
+                scale: 1.5,
+                color: '#008AD7',
+            },
+            ServicePrincipal: {
+                font: "'Font Awesome 5 Free'",
+                content: '\uf4fe',
+                scale: 1.5,
+                color: '#008AD7',
+            },
         },
         edgeScheme: {
             AdminTo: 'tapered',
@@ -321,6 +345,7 @@ if (typeof conf.get('edgeincluded') === 'undefined') {
         ReadGMSAPassword: true,
         HasSIDHistory: true,
         CanPSRemote: true,
+        SyncsTo: true,
     });
 }
 
@@ -367,6 +392,11 @@ if (!appStore.edgeincluded.hasOwnProperty('CanPSRemote')) {
     conf.set('edgeincluded', appStore.edgeincluded);
 }
 
+
+if (!appStore.edgeincluded.hasOwnProperty('SyncsTo')) {
+    appStore.edgeincluded.SyncsTo = true;
+    conf.set('edgeincluded', appStore.edgeincluded);
+}
 // if (!appStore.edgeincluded.hasOwnProperty("ReadLAPSPassword")) {
 //     appStore.edgeincluded.ReadLAPSPassword = true;
 //     conf.set("edgeincluded", appStore.edgeincluded)

@@ -14,6 +14,7 @@ export default class PrebuiltQueriesDisplay extends Component {
         this.state = {
             queries: [],
             custom: [],
+            azure: []
         };
     }
 
@@ -45,6 +46,21 @@ export default class PrebuiltQueriesDisplay extends Component {
                 });
 
                 this.setState({ queries: y });
+            }.bind(this),
+        });
+
+        $.ajax({
+            url: 'src/components/SearchContainer/Tabs/AzureQueries.json',
+            type: 'GET',
+            success: function(response) {
+                var x = JSON.parse(response);
+                var y = [];
+
+                $.each(x.queries, function(_, el) {
+                    y.push(el);
+                });
+
+                this.setState({ azure: y });
             }.bind(this),
         });
     }
@@ -91,6 +107,12 @@ export default class PrebuiltQueriesDisplay extends Component {
     render() {
         return (
             <div>
+                <h3>Azure AD Specific Queries</h3>
+                <div className='query-box'>
+                    {this.state.azure.map(function(a) {
+                        return <PrebuiltQueryNode key={a.name} info={a} />;
+                    })}
+                </div>
                 <h3>Pre-Built Analytics Queries</h3>
                 <div className='query-box'>
                     {this.state.queries.map(function(a) {

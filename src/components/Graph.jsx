@@ -1000,7 +1000,17 @@ class GraphContainer extends Component {
                 fontStyle: '900',
             });
         }
-
+        if (node.type == 'AzureUser' || node.type == 'AzureGroup'){
+            node.glyphs.push({
+                position: 'bottom-right',
+                font: '"Font Awesome 5 Free"',
+                content: '\uf0c2',
+                textColor: '#008AD7',
+                fillColor: 'white',
+                fontScale: 1.5,
+                fontStyle: '900',
+            });
+        }
         switch (type) {
             case 'Group':
                 node.type_group = true;

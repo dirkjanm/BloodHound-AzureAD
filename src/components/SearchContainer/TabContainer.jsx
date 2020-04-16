@@ -3,6 +3,7 @@ import DatabaseDataDisplay from './Tabs/DatabaseDataDisplay';
 import PrebuiltQueriesDisplay from './Tabs/PrebuiltQueriesDisplay';
 import NoNodeData from './Tabs/NoNodeData';
 import UserNodeData from './Tabs/UserNodeData';
+import AzureUserNodeData from './Tabs/AzureUserNodeData';
 import GroupNodeData from './Tabs/GroupNodeData';
 import ComputerNodeData from './Tabs/ComputerNodeData';
 import DomainNodeData from './Tabs/DomainNodeData';
@@ -19,6 +20,7 @@ class TabContainer extends Component {
 
         this.state = {
             userVisible: false,
+            azureUserVisible: false,
             computerVisible: false,
             groupVisible: false,
             domainVisible: false,
@@ -33,6 +35,8 @@ class TabContainer extends Component {
             this._userNodeClicked();
         } else if (type === 'Group') {
             this._groupNodeClicked();
+        } else if (type === 'AzureUser') {
+            this._azureUserNodeClicked();
         } else if (type === 'Computer') {
             this._computerNodeClicked();
         } else if (type === 'Domain') {
@@ -69,6 +73,20 @@ class TabContainer extends Component {
     _userNodeClicked() {
         this.setState({
             userVisible: true,
+            azureUserVisible: false,
+            computerVisible: false,
+            groupVisible: false,
+            domainVisible: false,
+            gpoVisible: false,
+            ouVisible: false,
+        });
+        this.setState({ selected: 2 });
+    }
+
+    _azureUserNodeClicked() {
+        this.setState({
+            userVisible: false,
+            azureUserVisible: true,
             computerVisible: false,
             groupVisible: false,
             domainVisible: false,
@@ -81,6 +99,7 @@ class TabContainer extends Component {
     _groupNodeClicked() {
         this.setState({
             userVisible: false,
+            azureUserVisible: false,
             computerVisible: false,
             groupVisible: true,
             domainVisible: false,
@@ -93,6 +112,7 @@ class TabContainer extends Component {
     _computerNodeClicked() {
         this.setState({
             userVisible: false,
+            azureUserVisible: false,
             computerVisible: true,
             groupVisible: false,
             domainVisible: false,
@@ -105,6 +125,7 @@ class TabContainer extends Component {
     _domainNodeClicked() {
         this.setState({
             userVisible: false,
+            azureUserVisible: false,
             computerVisible: false,
             groupVisible: false,
             domainVisible: true,
@@ -117,6 +138,7 @@ class TabContainer extends Component {
     _gpoNodeClicked() {
         this.setState({
             userVisible: false,
+            azureUserVisible: false,
             computerVisible: false,
             groupVisible: false,
             domainVisible: false,
@@ -129,6 +151,7 @@ class TabContainer extends Component {
     _ouNodeClicked() {
         this.setState({
             userVisible: false,
+            azureUserVisible: false,
             computerVisible: false,
             groupVisible: false,
             domainVisible: false,
@@ -163,10 +186,12 @@ class TabContainer extends Component {
                                 !this.state.groupVisible &&
                                 !this.state.domainVisible &&
                                 !this.state.gpoVisible &&
+                                !this.state.azureUserVisible &&
                                 !this.state.ouVisible
                             }
                         />
                         <UserNodeData visible={this.state.userVisible} />
+                        <AzureUserNodeData visible={this.state.azureUserVisible} />
                         <GroupNodeData visible={this.state.groupVisible} />
                         <ComputerNodeData
                             visible={this.state.computerVisible}

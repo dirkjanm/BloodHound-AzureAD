@@ -174,6 +174,51 @@ const EdgeFilter = ({ open }) => {
                 </label>
             </div>
             <div className={'edge-filter-heading'}>
+                <h4>Azure Edges</h4>
+                <button
+                    onClick={x => setSection('azure')}
+                    className={'fa fa-check-double'}
+                    data-toggle='tooltip'
+                    data-placement='top'
+                    title='Check all Azure edges'
+                />
+                <button
+                    onClick={x => clearSection('azure')}
+                    className={'fa fa-eraser'}
+                    data-toggle='tooltip'
+                    data-placement='top'
+                    title='Clear all Azure edges'
+                />
+            </div>
+            <div>
+                <input
+                    className='checkbox-inline'
+                    type='checkbox'
+                    name='SyncsTo'
+                    checked={edgeIncluded.SyncsTo}
+                    onChange={e => handleEdgeChange(e)}
+                />
+                <label onClick={e => handleEdgeChange(e)} name='SyncsTo'>
+                    {' '}
+                    SyncsTo
+                </label>
+            </div>
+            <div>
+                <input
+                    className='checkbox-inline'
+                    type='checkbox'
+                    name='Contains'
+                    checked={edgeIncluded.Contains}
+                    onChange={e => handleEdgeChange(e)}
+                />
+                <label onClick={e => handleEdgeChange(e)} name='Contains'>
+                    {' '}
+                    Contains
+                </label>
+            </div>
+
+
+            <div className={'edge-filter-heading'}>
                 <h4>ACL Edges</h4>
                 <button
                     onClick={() => setSection('acl')}

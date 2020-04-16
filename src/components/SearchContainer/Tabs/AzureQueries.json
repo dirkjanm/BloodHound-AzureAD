@@ -1,0 +1,40 @@
+{
+    "queries": [
+        {
+            "name": "Find all Azure Role members",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH p=((n)-[:MemberOf|SyncsTo*1..]->(m:AzureRole)) RETURN p",
+                    "allowCollapse": false
+                }
+            ]
+        },
+        {
+            "name": "Find Shortest Paths to Azure Role",
+            "queryList": [
+                {
+                    "final": false,
+                    "title": "Select a role...",
+                    "query": "MATCH (n:AzureRole) RETURN n.name ORDER BY n.name DESC"
+                },
+                {
+                    "final": true,
+                    "query": "MATCH (n),(m:AzureRole {name:{result}}),p=shortestPath((n)-[r:{}*1..]->(m)) WHERE n <> m RETURN p",
+                    "allowCollapse": true,
+                    "endNode": "{}"
+                }
+            ]
+        },
+        {
+            "name": "Find ServicePrincipals with custom owners",
+            "queryList": [
+                {
+                    "final": true,
+                    "query": "MATCH p=((n)-[:Owns*1..]->(m:ServicePrincipal)) RETURN p",
+                    "allowCollapse": false
+                }
+            ]
+        }
+    ]
+}
